@@ -24,8 +24,7 @@ public class MobilePhone {
 
     //  addNewContact(), has one parameter of type Contact and returns a boolean. Returns true if the contact doesn't exists, or false if the contact already exists.
     public boolean addNewContact(Contacts contact) {
-        int exists = findContact(contact);
-        if (exists >= 0) {
+        if (findContact(contact.getName()) >= 0) {
             System.out.println("Contact already exists");
             return false;
         }
@@ -38,21 +37,24 @@ public class MobilePhone {
     // Returns true if the contact exists and was updated successfully, or false if the contact doesn't exists.
     public boolean updateContact(Contacts oldContact, Contacts newContact) {
         int indexOFOldContact = findContact(oldContact);
-        if (indexOFOldContact >= 0) {
-            myContacts.set(indexOFOldContact, newContact);
-            System.out.println("Contact replaced.");
-            return true;
+        if (indexOFOldContact < 0) {
+            System.out.println("Old contact doesn't exist.");
+        }else if(findContact(oldContact.getName()) != -1) { //checks if contact with the same name already exists.
+            System.out.println("Contact already exists. Update was not successful.");
+            return false;
         }
-        System.out.println("Old contact doesn't exist.");
-        return false;
+
+        this.myContacts.set(indexOFOldContact, newContact);
+        System.out.println("Contact replaced.");
+        return true;
+
     }
 
-    //        -  removeContact(), has one parameter of type Contact and returns a boolean. Returns true if the contact exists and was removed successfully, or false if the contact doesn't exists.
+    //removeContact(), has one parameter of type Contact and returns a boolean. Returns true if the contact exists and was removed successfully, or false if the contact doesn't exists.
     public boolean removeContact(Contacts contact) {
         int indexOfContactToBeRemoved = findContact(contact);
-
         if (indexOfContactToBeRemoved >= 0) {
-            myContacts.remove(contact);
+            this.myContacts.remove(contact);
             System.out.println("Contact removed.");
             return true;
         }
@@ -61,16 +63,16 @@ public class MobilePhone {
 
     }
 
-    //  findContact(), has one parameter of type Contact and returns an int. The returned value is it's position in the ArrayList, it will either be -1 (doesn't exists) or a value greater than or equal to 0 (does exists).
-    public int findContact(Contacts contact) {
-        return myContacts.indexOf(contact);
-
+    //findContact(), has one parameter of type Contact and returns an int. The returned value is it's position in the ArrayList, it will either be -1 (doesn't exists) or a value greater than or equal to 0 (does exists).
+    private int findContact(Contacts contact) {
+        return this.myContacts.indexOf(contact);
     }
 
     //findContact(), same as above, only it has one parameter of type String.
     private int findContact(String contactName) {
-        for (int i = 0; i < myContacts.size(); i++) {
-            if (contactName == getMyContacts().get(i).getName()) {
+        for (int i = 0; i < this.myContacts.size(); i++) {
+            Contacts contact = this.myContacts.get(i);
+            if (contact.getName().equals(contactName)) {
                 return i;
             }
         }
@@ -78,10 +80,9 @@ public class MobilePhone {
     }
 
     //queryContact(), has one parameter of type String and returns a Contact. Use the String to search for the name and then return the Contact. Return null otherwise.
-    public Contacts queryContact(String name) {
-        int existingContact = findContact(name);
-        if (existingContact >= 0) {
-            return getMyContacts().get(existingContact);
+    public String queryContact(Contacts contact) {
+        if (findContact(contact) >= 0) {
+            return contact.getName();
         }
         return null;
     }
@@ -99,5 +100,13 @@ public class MobilePhone {
             System.out.println(((i + 1) + ". " + getMyContacts().get(i).getName()) + " -> " +
                     getMyContacts().get(i).getPhoneNumber());
         }
+    }
+
+    public Contacts queryContacts(String name) {
+        int position = findContact(name);
+        if (position >= 0) {
+            return this.myContacts.get(position);
+        }
+        return null;
     }
 }
